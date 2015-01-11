@@ -1,0 +1,96 @@
+* php test expand test
+  :PROPERTIES:
+  :ID:       39b75bdf-0f2a-4e7a-a03c-4c2bfa96bf60
+  :END:
+#+source: hello
+#+begin_src php :expand true
+  echo "hello world";
+#+end_src
+
+#+RESULTS:
+: hello world
+
+#+source: intreturn
+#+begin_src php :expand true
+  echo 42;
+#+end_src
+
+#+RESULTS:
+: 42
+
+#+source: expandvar
+#+begin_src php :var foo="bar" :var baz=1 :expand true
+  echo "$baz $foo";
+#+end_src
+
+#+RESULTS:
+: 1 bar
+
+#+source: multiline
+#+begin_src php :expand true
+  echo "php!\n";
+  echo "sucks!";
+#+end_src
+
+#+RESULTS:
+| php!   |
+| sucks! |
+
+* php noexpand test
+  :PROPERTIES:
+  :ID:       47f2043a-abc9-4059-92bf-5df939e6881b
+  :END:
+#+source: externalstuff
+#+begin_src php
+ outside php
+  <?php echo "inside php\n"?>
+#+end_src
+
+#+RESULTS:
+| outside | php |
+| inside  | php |
+
+* php var array test
+  :PROPERTIES:
+  :ID:       2472b4b4-6582-44ca-844d-6a8299dd728b
+  :END:
+#+name: atable
+| a | b    |
+| c | duck |
+
+#+source: fromvar
+#+begin_src php :var foo='("baz" "bar")
+  <?php
+  foreach($foo as $val){
+      echo "value: $val\n";
+  }
+  ?>
+#+end_src
+
+#+RESULTS:
+| value: | baz |
+| value: | bar |
+
+#+source: fromvarexpand
+#+begin_src php :var foo='("baz" "bar")  :expand true
+  foreach($foo as $val){
+      echo "value: $val\n";
+  }
+#+end_src
+
+#+RESULTS:
+
+#+source: fromtable
+#+begin_src php :var foo=atable :expand true
+  foreach($foo as $row){
+    foreach($row as $val)
+      echo "value: $val\n";
+  }
+#+end_src
+
+#+RESULTS:
+| value: | a    |
+| value: | b    |
+| value: | c    |
+| value: | duck |
+
