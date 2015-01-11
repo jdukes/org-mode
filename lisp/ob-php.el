@@ -33,11 +33,6 @@
 ;;; Code:
 (require 'ob)
 
-;; possibly require modes required for your language
-;; (require 'php-mode)
-
-;;(declare-function org-remove-indentation "org" )
-
 ;; optionally define a file extension for this language
 (add-to-list 'org-babel-tangle-lang-exts '("php" . "php"))
 
