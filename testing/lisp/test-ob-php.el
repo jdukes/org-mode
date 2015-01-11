@@ -68,7 +68,15 @@
     (should (equal '(("value:" "baz")("value:" "bar")) (org-babel-execute-src-block)))))
 
 (ert-deftest ob-php/fromvarexpand ()
-  "get value from variable in an unexpanded block."
+  "get value from variable in an expanded block."
   (org-test-at-id "2472b4b4-6582-44ca-844d-6a8299dd728b"
     (org-babel-next-src-block 2)
     (should (equal '(("value:" "baz")("value:" "bar")) (org-babel-execute-src-block)))))
+
+(ert-deftest ob-php/fromtableexpand ()
+  "get value from table in an expanded block."
+  (org-test-at-id "2472b4b4-6582-44ca-844d-6a8299dd728b"
+    (org-babel-next-src-block 3)
+    (should (equal '(("value:" "a")("value:" "b")("value:" "c")("value:" "duck")) (org-babel-execute-src-block)))))
+
+

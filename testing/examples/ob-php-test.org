@@ -79,8 +79,10 @@
 #+end_src
 
 #+RESULTS:
+| value: | baz |
+| value: | bar |
 
-#+source: fromtable
+#+source: fromtableexpand
 #+begin_src php :var foo=atable :expand true
   foreach($foo as $row){
     foreach($row as $val)
