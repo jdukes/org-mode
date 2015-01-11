@@ -1,30 +1,30 @@
 ;;; ob-template.el --- org-babel functions for template evaluation
 
-;; Copyright (C) your name here
+;; Copyright (C) Josh Dukes
 
-;; Author: your name here
+;; Author: Josh Dukes
 ;; Keywords: literate programming, reproducible research
 ;; Homepage: http://orgmode.org
 ;; Version: 0.01
 
-;;; License:
+;; This file is part of GNU Emacs.
 
-;; This program is free software; you can redistribute it and/or modify
+;; GNU Emacs is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation; either version 3, or (at your option)
-;; any later version.
-;;
-;; This program is distributed in the hope that it will be useful,
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; GNU Emacs is distributed in the hope that it will be useful,
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
-;;
+
 ;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs; see the file COPYING.  If not, write to the
-;; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
-;; Boston, MA 02110-1301, USA.
+;; along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Commentary:
+
+;; Org-Babel support for evaluating php source code.
 
 ;; If you are planning on adding a language to org-babel we would ask
 ;; that if possible you fill out the FSF copyright assignment form
@@ -44,10 +44,6 @@
 
 ;;; Code:
 (require 'ob)
-(require 'ob-ref)
-;;(require 'ob-comint)
-(require 'ob-eval)
-;;(require 'cl)
 
 ;; possibly require modes required for your language
 ;; (require 'php-mode)
@@ -66,21 +62,38 @@
 (defun org-babel-expand-body:php (body params &optional processed-params)
   "Expand BODY according to PARAMS, return the expanded body."
   ;;(let ((vars (nth 1 (or processed-params (org-babel-process-params params)))))
-  (let ((full-body
-	 (org-babel-expand-body:generic
-	  body
-	  params
-	  (org-babel-variable-assignments:php params))))
-    (if (or (car (assoc :expand params)) nil)
+  (if (or (car (assoc :expand params)) nil)
+      (let ((full-body
+	     (org-babel-expand-body:generic
+	      body
+	      params
+	      (org-babel-variable-assignments:php params))))
 	(concat "<?php\n"
 		full-body
-		"\n?>")
-      full-body)))
+		"\n?>"))
+    (let ((vars
+	   (concat "<?php\n"
+		   (mapconcat
+		    #'identity
+		    (org-babel-variable-assignments:php params)
+		    "\n")
+		   "\n?>")))
+      (concat vars body))))
+
+(defun org-babel-prep-session:php (session params)
+  "Prepare SESSION according to the header arguments in PARAMS."
+  (error "Sessions are not supported for PHP"))
+
+(defun org-babel-php-initiate-session (&optional session params)
+  "Return nil because sessions are not supported by PHP."
+  nil)
 
 (defun org-babel-execute:php (body params)
-  (let* ((flags (or (cdr (assoc :flags params)) ""))
-	 (src-file (make-temp-file nil nil ".php"))
+  (let* ((session (cdr (assoc :session params)))
+	 (flags (or (cdr (assoc :flags params)) ""))
+	 (src-file (org-babel-temp-file "php-src-"))
 	 (full-body (org-babel-expand-body:php body params))
+	 (session (org-babel-php-initiate-session session))
 	 (results
 	  (progn
 	    (with-temp-file src-file (insert full-body))
@@ -103,7 +116,6 @@
   "Return a list of PHP statements assigning the block's variables."
   (mapcar
    (lambda (pair)
-     ;;holy fuck I hate php
      (format "$%s=%s;"
 	     (car pair)
 	     (org-babel-php-var-to-php (cdr pair))))
