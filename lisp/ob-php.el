@@ -1,6 +1,6 @@
 ;;; ob-template.el --- org-babel functions for template evaluation
 
-;; Copyright (C) Josh Dukes
+;; Copyright (C) 2014 Josh Dukes
 
 ;; Author: Josh Dukes
 ;; Keywords: literate programming, reproducible research
